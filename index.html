@@ -1,0 +1,2659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palette Picker | Alex Rivera</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       THEME COLORS
+       The palette picker changes these variables.
+       The values below are the default "Terracotta" theme.
+       ========================================================= */
+    :root {
+      --bg: #faf7f2;
+      --surface: #ffffff;
+      --text: #333333;
+      --heading: #2f2b28;
+      --muted: #6b645d;
+      --border: #e8ddd0;
+      --primary: #ab5a3b;
+      --on-primary: #ffffff;
+      --tint: #f3e6dc;
+      --secondary: #6f9481;
+      --tertiary: #6a7fb0;
+      --contrast: #2f2b28;
+      --on-contrast: #ffffff;
+
+      /* a few colors mixed from the ones above */
+      --primary-hover: color-mix(in srgb, var(--primary) 85%, #000000);
+      --tag-text: color-mix(in srgb, var(--primary) 60%, var(--heading));
+      --contrast-accent: color-mix(in srgb, var(--primary) 50%, var(--on-contrast));
+      --contrast-soft: color-mix(in srgb, var(--on-contrast) 78%, var(--contrast));
+      --contrast-line: color-mix(in srgb, var(--on-contrast) 25%, var(--contrast));
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--primary);
+    }
+
+    ::selection {
+      background-color: var(--primary);
+      color: var(--on-primary);
+    }
+
+    h1, h2, h3 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-weight: 400;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ===== Header ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+      padding: 14px 0;
+    }
+
+    .site-header .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .logo {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 28px;
+      color: var(--heading);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px 22px;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 15px;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    nav .nav-button {
+      background-color: var(--contrast);
+      color: var(--on-contrast);
+      padding: 7px 18px;
+      border-radius: 30px;
+    }
+
+    nav .nav-button:hover {
+      background-color: var(--primary);
+      color: var(--on-primary);
+    }
+
+    /* ===== Shared section styles ===== */
+    section {
+      position: relative;
+      padding: 80px 0;
+      scroll-margin-top: 70px;
+    }
+
+    .white-bg {
+      background-color: var(--surface);
+    }
+
+    .section-title {
+      text-align: center;
+      margin-bottom: 45px;
+    }
+
+    .section-label {
+      display: inline-block;
+      margin: 0 0 8px 0;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .section-title h2 {
+      font-size: 42px;
+      color: var(--heading);
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 28px;
+      background-color: var(--primary);
+      color: var(--on-primary);
+      text-decoration: none;
+      border: 2px solid var(--primary);
+      border-radius: 30px;
+      font-weight: 500;
+    }
+
+    .button:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .button-outline {
+      background-color: transparent;
+      color: var(--heading);
+      border-color: var(--heading);
+    }
+
+    .button-outline:hover {
+      background-color: var(--heading);
+      border-color: var(--heading);
+      color: var(--bg);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 14px;
+      margin: 3px 3px 3px 0;
+      background-color: var(--tint);
+      color: var(--tag-text);
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    /* ===== Home ===== */
+    #home {
+      background-color: var(--tint);
+      padding: 90px 0;
+    }
+
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+
+    .hero-text {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .hello {
+      margin: 0 0 6px 0;
+      color: var(--primary);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .hero-text h1 {
+      font-size: 64px;
+      line-height: 1.1;
+      color: var(--heading);
+    }
+
+    .role {
+      margin: 8px 0 18px 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .role span {
+      color: var(--primary);
+    }
+
+    .intro {
+      max-width: 460px;
+      margin: 0 0 30px 0;
+      color: var(--muted);
+    }
+
+    .hero-buttons a {
+      margin: 0 8px 10px 0;
+    }
+
+    .stats {
+      display: flex;
+      gap: 35px;
+      margin-top: 35px;
+      padding-top: 25px;
+      border-top: 1px solid color-mix(in srgb, var(--heading) 15%, transparent);
+    }
+
+    .stats strong {
+      display: block;
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1;
+      color: var(--heading);
+    }
+
+    .stats span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .hero-image {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      margin: 0 auto;
+    }
+
+    /* dotted square behind the picture */
+    .hero-image::before {
+      content: "";
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 150px;
+      height: 150px;
+      background-image: radial-gradient(var(--primary) 2px, transparent 2px);
+      background-size: 16px 16px;
+    }
+
+    /* small circle */
+    .hero-image::after {
+      content: "";
+      position: absolute;
+      bottom: 5px;
+      left: -15px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background-color: var(--secondary);
+    }
+
+    .profile-pic {
+      position: relative;
+      z-index: 1;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 8px solid var(--surface);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 70%, #ffffff), color-mix(in srgb, var(--primary) 85%, #000000));
+      color: var(--on-primary);
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 90px;
+      text-align: center;
+      line-height: 284px;
+      box-shadow: 0 15px 35px color-mix(in srgb, var(--primary) 30%, transparent);
+    }
+
+    /* ===== About ===== */
+    .about-row {
+      display: flex;
+      gap: 50px;
+      flex-wrap: wrap;
+    }
+
+    .about-text {
+      flex: 3;
+      min-width: 280px;
+    }
+
+    .about-text p {
+      margin-top: 0;
+      color: var(--text);
+    }
+
+    .about-text .big-text {
+      font-size: 20px;
+      color: var(--heading);
+    }
+
+    .info-box {
+      position: relative;
+      flex: 2;
+      min-width: 260px;
+      background-color: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 25px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--border);
+      font-size: 15px;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-row span {
+      color: var(--muted);
+    }
+
+    .info-row strong {
+      font-weight: 500;
+      text-align: right;
+      color: var(--heading);
+    }
+
+    .skills {
+      margin-top: 40px;
+    }
+
+    .skills h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: var(--heading);
+    }
+
+    .skill {
+      display: inline-block;
+      padding: 8px 18px;
+      margin: 4px 4px 4px 0;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 30px;
+      font-size: 14px;
+    }
+
+    .skill:hover {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: var(--on-primary);
+    }
+
+    /* ===== Education (timeline) ===== */
+    .timeline {
+      max-width: 750px;
+      margin: 0 auto;
+      padding-left: 30px;
+      border-left: 3px solid color-mix(in srgb, var(--primary) 22%, var(--bg));
+    }
+
+    .edu-box {
+      position: relative;
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 26px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .edu-box:last-child {
+      margin-bottom: 0;
+    }
+
+    /* dot on the timeline line */
+    .edu-box::before {
+      content: "";
+      position: absolute;
+      left: -43px;
+      top: 26px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      border: 4px solid var(--bg);
+    }
+
+    .edu-box h3 {
+      font-size: 24px;
+      color: var(--heading);
+    }
+
+    .school {
+      margin: 2px 0 10px 0;
+      color: var(--primary);
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .edu-box p:last-child {
+      margin-bottom: 0;
+      color: var(--muted);
+    }
+
+    /* ===== Projects ===== */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 28px;
+    }
+
+    .project-card {
+      background-color: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+    }
+
+    .project-card:hover {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .project-image {
+      position: relative;
+      height: 170px;
+      padding: 20px;
+      color: var(--on-primary);
+      /* diagonal stripes pattern */
+      background-image: repeating-linear-gradient(45deg,
+        color-mix(in srgb, var(--on-primary) 10%, transparent) 0,
+        color-mix(in srgb, var(--on-primary) 10%, transparent) 10px,
+        transparent 10px,
+        transparent 20px);
+    }
+
+    .project-image .number {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 60px;
+      line-height: 1;
+    }
+
+    .project-image .category {
+      position: absolute;
+      left: 20px;
+      bottom: 18px;
+      background-color: var(--surface);
+      color: var(--heading);
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    .color-1 { background-color: var(--primary); }
+    .color-2 { background-color: var(--secondary); }
+    .color-3 { background-color: var(--tertiary); }
+
+    .project-info {
+      padding: 22px 24px 24px 24px;
+    }
+
+    .project-info h3 {
+      font-size: 26px;
+      color: var(--heading);
+    }
+
+    .project-info p {
+      margin: 6px 0 14px 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .project-link {
+      display: inline-block;
+      margin-top: 14px;
+      font-weight: 500;
+      font-size: 15px;
+      text-decoration: none;
+    }
+
+    .project-link:hover {
+      text-decoration: underline;
+    }
+
+    /* ===== Contact ===== */
+    .contact-card {
+      position: relative;
+      overflow: hidden;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 40px;
+      background-color: var(--contrast);
+      color: var(--on-contrast);
+      border-radius: 24px;
+      text-align: center;
+    }
+
+    /* decorative circles */
+    .contact-card::before {
+      content: "";
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      opacity: 0.5;
+    }
+
+    .contact-card::after {
+      content: "";
+      position: absolute;
+      bottom: -50px;
+      left: -40px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 2px solid var(--secondary);
+    }
+
+    .contact-card h2 {
+      position: relative;
+      font-size: 44px;
+      line-height: 1.15;
+    }
+
+    .contact-card h2 span {
+      color: var(--contrast-accent);
+    }
+
+    .contact-card p {
+      position: relative;
+      max-width: 480px;
+      margin: 15px auto 30px auto;
+      color: var(--contrast-soft);
+    }
+
+    .contact-card .section-label {
+      position: relative;
+      color: var(--contrast-accent);
+    }
+
+    .contact-card .button {
+      position: relative;
+    }
+
+    .socials {
+      position: relative;
+      margin-top: 30px;
+    }
+
+    .socials a {
+      display: inline-block;
+      margin: 5px;
+      padding: 8px 20px;
+      border: 1px solid var(--contrast-line);
+      border-radius: 30px;
+      color: var(--on-contrast);
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .socials a:hover {
+      border-color: var(--contrast-accent);
+      color: var(--contrast-accent);
+    }
+
+    /* ===== Footer ===== */
+    footer {
+      padding: 30px 0;
+      border-top: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    footer .container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    footer p {
+      margin: 0;
+    }
+
+    footer a {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: var(--primary);
+    }
+
+    /* =========================================================
+       COLOR LABELS
+       The little dark tags on the page that show which
+       color is used where. Click one to edit that color.
+       ========================================================= */
+    .tag {
+      --tag-bg: #1d1d1f;
+      position: relative;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+      padding: 4px 10px 4px 5px;
+      border: none;
+      border-radius: 20px;
+      background-color: var(--tag-bg);
+      color: #ffffff;
+      font-family: 'Poppins', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      font-style: normal;
+      line-height: 1.2;
+      letter-spacing: 0;
+      text-transform: none;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .tag:hover {
+      --tag-bg: #46464b;
+    }
+
+    /* the little color dot inside the tag */
+    .tag::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background-color: var(--dot);
+      box-shadow: 0 0 0 1.5px #ffffff;
+    }
+
+    /* tag right after some text: the arrow points left at the text */
+    .tag-after {
+      margin-left: 12px;
+    }
+
+    .tag-after::after {
+      content: "";
+      position: absolute;
+      left: -6px;
+      top: 50%;
+      margin-top: -5px;
+      border-style: solid;
+      border-width: 5px 6px 5px 0;
+      border-color: transparent var(--tag-bg) transparent transparent;
+    }
+
+    /* tag above a button: the arrow points down at it */
+    .tag-holder {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tag-above {
+      position: absolute;
+      bottom: calc(100% + 7px);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* tag on the top edge of a box: the arrow points at the border line */
+    .tag-edge {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      right: 18px;
+    }
+
+    .tag-above::after,
+    .tag-edge::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-style: solid;
+      border-width: 6px 5px 0 5px;
+      border-color: var(--tag-bg) transparent transparent transparent;
+    }
+
+    /* tag in the corner of an area (backgrounds) */
+    .tag-area {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+    }
+
+    .tag-area.tag-right {
+      left: auto;
+      right: 14px;
+    }
+
+    /* the "Labels" switch hides all tags */
+    body.hide-labels .tag {
+      display: none;
+    }
+
+    /* ===== Phone screens ===== */
+    @media (max-width: 700px) {
+      /* on phones the header just scrolls away so it doesn't cover the page */
+      .site-header {
+        position: static;
+      }
+
+      .site-header .container {
+        justify-content: center;
+      }
+
+      nav {
+        justify-content: center;
+        gap: 6px 16px;
+      }
+
+      section {
+        padding: 60px 0;
+        scroll-margin-top: 0;
+      }
+
+      #home {
+        padding: 60px 0;
+        text-align: center;
+      }
+
+      .hero-text h1 {
+        font-size: 46px;
+      }
+
+      .intro {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .stats {
+        justify-content: center;
+        gap: 25px;
+      }
+
+      .hero-image,
+      .profile-pic {
+        width: 220px;
+        height: 220px;
+      }
+
+      .profile-pic {
+        font-size: 66px;
+        line-height: 204px;
+      }
+
+      .hero-image::before {
+        width: 110px;
+        height: 110px;
+        top: -12px;
+        right: -12px;
+      }
+
+      .hero-image::after {
+        width: 60px;
+        height: 60px;
+        left: -8px;
+      }
+
+      .section-title h2 {
+        font-size: 34px;
+      }
+
+      .contact-card {
+        padding: 45px 22px;
+      }
+
+      .contact-card h2 {
+        font-size: 34px;
+      }
+
+      footer .container {
+        justify-content: center;
+        text-align: center;
+      }
+    }
+
+    /* =========================================================
+       PALETTE PICKER PANEL
+       It has its own fixed colors so it always stays readable.
+       ========================================================= */
+    .picker {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      width: 360px;
+      display: none;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      background-color: #ffffff;
+      color: #1d1d1f;
+      border-right: 1px solid #e8e8ec;
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.06);
+      font-size: 14px;
+      line-height: 1.5;
+      color-scheme: light;
+    }
+
+    body.panel-open .picker {
+      display: block;
+    }
+
+    .picker button {
+      font-family: inherit;
+    }
+
+    /* top part of the panel (stays visible while scrolling) */
+    .picker-head {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      padding: 18px 22px 14px 22px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #efeff2;
+    }
+
+    .picker-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .picker-title {
+      font-size: 26px;
+      line-height: 1.1;
+      color: #1d1d1f;
+    }
+
+    .picker-close {
+      flex: none;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid #e8e8ec;
+      border-radius: 50%;
+      background-color: #ffffff;
+      color: #1d1d1f;
+      cursor: pointer;
+    }
+
+    .picker-close:hover {
+      background-color: #f2f2f5;
+    }
+
+    .picker-current {
+      margin: 4px 0 12px 0;
+      font-size: 12.5px;
+      color: #6e6e73;
+    }
+
+    .picker-current strong {
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .picker-tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    /* on/off switch */
+    .switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .switch input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+    }
+
+    .switch-track {
+      position: relative;
+      width: 38px;
+      height: 22px;
+      border-radius: 22px;
+      background-color: #d1d1d6;
+    }
+
+    .switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+
+    .switch input:checked + .switch-track {
+      background-color: #2e9e5b;
+    }
+
+    .switch input:checked + .switch-track::after {
+      left: 19px;
+    }
+
+    .switch input:focus-visible + .switch-track {
+      outline: 2px solid #1d1d1f;
+      outline-offset: 2px;
+    }
+
+    /* tabs and the Light / Dark switch */
+    .seg {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 12px;
+      background-color: #f2f2f5;
+    }
+
+    .seg-btn {
+      flex: 1;
+      padding: 7px 6px;
+      border: none;
+      border-radius: 9px;
+      background: transparent;
+      color: #6e6e73;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .seg-btn:hover {
+      color: #1d1d1f;
+    }
+
+    .seg-btn.active {
+      background-color: #ffffff;
+      color: #1d1d1f;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    }
+
+    .picker-section {
+      padding: 18px 22px;
+      border-bottom: 1px solid #efeff2;
+    }
+
+    .picker-section:last-child {
+      border-bottom: none;
+      padding-bottom: 28px;
+    }
+
+    .picker-label {
+      margin: 0 0 10px 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #8e8e93;
+    }
+
+    .picker-label.spaced {
+      margin-top: 18px;
+    }
+
+    .picker-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .picker-label-row .picker-label {
+      margin: 0;
+    }
+
+    .picker-note {
+      margin: 10px 0 0 0;
+      font-size: 12px;
+      color: #8e8e93;
+    }
+
+    .picker-note.top {
+      margin: 0 0 14px 0;
+      font-size: 12.5px;
+      color: #6e6e73;
+    }
+
+    .ui-btn {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #d9d9de;
+      border-radius: 30px;
+      background-color: #ffffff;
+      color: #1d1d1f;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .ui-btn:hover {
+      border-color: #1d1d1f;
+    }
+
+    .ui-btn-dark {
+      background-color: #1d1d1f;
+      border-color: #1d1d1f;
+      color: #ffffff;
+    }
+
+    .ui-btn-dark:hover {
+      background-color: #3a3a3c;
+    }
+
+    .ui-btn.wide {
+      width: 100%;
+    }
+
+    .random-btn {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 16px;
+    }
+
+    .small-btn {
+      padding: 4px 12px;
+      border: 1px solid #d9d9de;
+      border-radius: 20px;
+      background-color: #ffffff;
+      color: #1d1d1f;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .small-btn:hover {
+      border-color: #1d1d1f;
+    }
+
+    /* theme cards */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .theme-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 6px 6px 8px 6px;
+      border: 1px solid #e8e8ec;
+      border-radius: 12px;
+      background-color: #ffffff;
+      color: #1d1d1f;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .theme-card:hover {
+      border-color: #b8b8be;
+    }
+
+    .theme-card.active {
+      border-color: #1d1d1f;
+      box-shadow: 0 0 0 1px #1d1d1f;
+    }
+
+    .theme-swatches {
+      display: flex;
+      height: 34px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .theme-swatches i {
+      flex: 1;
+    }
+
+    .theme-name {
+      padding: 0 2px;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+
+    /* color wheel */
+    .steps {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12.5px;
+      color: #3a3a3c;
+    }
+
+    .steps li {
+      margin-bottom: 4px;
+    }
+
+    .steps strong {
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .wheel {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      margin: 20px auto 8px auto;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle closest-side, #ffffff, rgba(255, 255, 255, 0)),
+        conic-gradient(hsl(0, 100%, 50%), hsl(30, 100%, 50%), hsl(60, 100%, 50%), hsl(90, 100%, 50%),
+                       hsl(120, 100%, 50%), hsl(150, 100%, 50%), hsl(180, 100%, 50%), hsl(210, 100%, 50%),
+                       hsl(240, 100%, 50%), hsl(270, 100%, 50%), hsl(300, 100%, 50%), hsl(330, 100%, 50%),
+                       hsl(360, 100%, 50%));
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.1);
+      cursor: crosshair;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .wheel-lines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .wheel-marker {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      border-radius: 50%;
+      border: 3px solid #ffffff;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+    }
+
+    .wheel-marker.base {
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0 -15px;
+      border-width: 4px;
+      pointer-events: auto;
+      cursor: grab;
+    }
+
+    .wheel-marker.base:focus-visible {
+      outline: 2px solid #1d1d1f;
+      outline-offset: 3px;
+    }
+
+    .wheel-hint {
+      margin: 0 0 4px 0;
+      text-align: center;
+      font-size: 11.5px;
+      color: #8e8e93;
+    }
+
+    .combo-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .combo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px 6px 8px;
+      border: 1px solid #e8e8ec;
+      border-radius: 30px;
+      background-color: #ffffff;
+      color: #1d1d1f;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .combo:hover {
+      border-color: #b8b8be;
+    }
+
+    .combo.active {
+      background-color: #1d1d1f;
+      border-color: #1d1d1f;
+      color: #ffffff;
+    }
+
+    .combo-tip {
+      margin: 10px 0 0 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background-color: #f5f5f7;
+      font-size: 12.5px;
+      color: #3a3a3c;
+    }
+
+    .mini-palette {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px 10px;
+    }
+
+    .mini-swatch {
+      display: flex;
+      flex-direction: column;
+      font-size: 11.5px;
+      line-height: 1.35;
+    }
+
+    .mini-color {
+      height: 40px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .mini-swatch strong {
+      font-weight: 500;
+    }
+
+    .mini-swatch code {
+      font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+      font-size: 11px;
+      color: #6e6e73;
+    }
+
+    /* color rows */
+    .color-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .color-row + .color-row {
+      border-top: 1px solid #f2f2f5;
+    }
+
+    .color-row.highlight {
+      background-color: #fff4d6;
+      box-shadow: 0 0 0 6px #fff4d6;
+      border-radius: 4px;
+    }
+
+    .swatch {
+      flex: none;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 10px;
+      background: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .swatch::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .swatch::-webkit-color-swatch {
+      border: none;
+      border-radius: 9px;
+    }
+
+    .swatch::-moz-color-swatch {
+      border: none;
+      border-radius: 9px;
+    }
+
+    .color-meta {
+      flex: 1;
+      min-width: 0;
+      line-height: 1.3;
+    }
+
+    .color-meta strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .color-meta span {
+      font-size: 11.5px;
+      color: #8e8e93;
+    }
+
+    .hex-input {
+      flex: none;
+      width: 84px;
+      padding: 7px 8px;
+      border: 1px solid #e8e8ec;
+      border-radius: 8px;
+      background-color: #fafafa;
+      color: #1d1d1f;
+      font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+      font-size: 12.5px;
+      text-transform: uppercase;
+    }
+
+    .hex-input:focus {
+      outline: none;
+      border-color: #1d1d1f;
+      background-color: #ffffff;
+    }
+
+    .hex-input.invalid {
+      border-color: #d64545;
+    }
+
+    .copy-btn {
+      flex: none;
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: #8e8e93;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background-color: #f2f2f5;
+      color: #1d1d1f;
+    }
+
+    /* contrast check rows */
+    .contrast-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .contrast-sample {
+      flex: none;
+      width: 38px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .contrast-name {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .contrast-ratio {
+      font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+      font-size: 12px;
+      color: #6e6e73;
+    }
+
+    .badge {
+      flex: none;
+      min-width: 66px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .badge.pass { background-color: #e3f4e8; color: #1e6b37; }
+    .badge.warn { background-color: #fdf0d8; color: #8a5a00; }
+    .badge.fail { background-color: #fde4e4; color: #a12828; }
+
+    /* export */
+    .code {
+      margin: 0 0 12px 0;
+      padding: 14px;
+      max-height: 320px;
+      overflow: auto;
+      border-radius: 12px;
+      background-color: #f5f5f7;
+      color: #1d1d1f;
+      font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    /* button that opens the panel */
+    .open-picker {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      z-index: 90;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 18px;
+      border: none;
+      border-radius: 30px;
+      background-color: #1d1d1f;
+      color: #ffffff;
+      font-family: 'Poppins', Arial, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .open-picker:hover {
+      background-color: #3a3a3c;
+    }
+
+    body.panel-open .open-picker {
+      display: none;
+    }
+
+    /* big screens: the panel sits beside the page */
+    @media (min-width: 900px) {
+      body.panel-open {
+        padding-left: 360px;
+      }
+    }
+
+    /* small screens: the panel sits at the bottom of the screen */
+    @media (max-width: 899px) {
+      .picker {
+        top: auto;
+        right: 0;
+        width: auto;
+        height: 70vh;
+        border-right: none;
+        border-top: 1px solid #e8e8ec;
+        border-radius: 20px 20px 0 0;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .picker-head {
+        padding-top: 14px;
+        border-radius: 20px 20px 0 0;
+      }
+
+      body.panel-open {
+        padding-bottom: 70vh;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== Palette picker panel ===== -->
+  <aside class="picker" id="picker" aria-label="Palette picker">
+    <div class="picker-head" id="pickerHead">
+      <div class="picker-top">
+        <h2 class="picker-title">Palette Picker</h2>
+        <button type="button" class="picker-close" id="closePicker" aria-label="Hide palette panel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+      <p class="picker-current">Theme: <strong id="currentTheme">Terracotta</strong></p>
+      <div class="picker-tools">
+        <button type="button" class="ui-btn ui-btn-dark random-btn" id="randomTheme">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>
+          Random theme
+        </button>
+        <label class="switch">
+          <input type="checkbox" id="labelsToggle" checked>
+          <span class="switch-track" aria-hidden="true"></span>
+          Labels
+        </label>
+      </div>
+      <div class="seg" role="tablist" aria-label="Palette tools">
+        <button type="button" class="seg-btn tab active" data-tab="themes" role="tab" aria-selected="true">Themes</button>
+        <button type="button" class="seg-btn tab" data-tab="wheel" role="tab" aria-selected="false">Wheel</button>
+        <button type="button" class="seg-btn tab" data-tab="colors" role="tab" aria-selected="false">Colors</button>
+        <button type="button" class="seg-btn tab" data-tab="export" role="tab" aria-selected="false">Export</button>
+      </div>
+    </div>
+
+    <!-- Themes tab -->
+    <div class="tab-panel" data-panel="themes">
+      <div class="picker-section">
+        <p class="picker-note top">Click a theme to try it. The dark tags on the page show where each color is used. Click a tag to edit that color, or turn them off with the Labels switch.</p>
+        <div class="theme-grid" id="themeGrid"></div>
+      </div>
+    </div>
+
+    <!-- Wheel tab -->
+    <div class="tab-panel" data-panel="wheel" hidden>
+      <div class="picker-section">
+        <h3 class="picker-label">How to use the wheel</h3>
+        <ol class="steps">
+          <li><strong>Drag the big dot</strong> to choose your main color. Near the edge = bold, near the middle = soft.</li>
+          <li><strong>Pick a combo.</strong> The small dots jump to colors that go with it.</li>
+          <li><strong>Choose Light or Dark.</strong> The page changes as you go.</li>
+        </ol>
+        <div class="wheel" id="wheel">
+          <svg class="wheel-lines" id="wheelLines" viewBox="0 0 220 220" aria-hidden="true"></svg>
+          <span class="wheel-marker" id="markerTertiary" aria-hidden="true"></span>
+          <span class="wheel-marker" id="markerSecondary" aria-hidden="true"></span>
+          <span class="wheel-marker base" id="markerBase" tabindex="0" role="slider" aria-label="Main color" aria-valuemin="0" aria-valuemax="359"></span>
+        </div>
+        <p class="wheel-hint">Big dot = Primary · small dots = Secondary and Tertiary</p>
+
+        <h3 class="picker-label spaced">Combo</h3>
+        <div class="combo-list" id="comboList"></div>
+        <p class="combo-tip" id="comboTip"></p>
+
+        <h3 class="picker-label spaced">Mode</h3>
+        <div class="seg" id="modeSwitch">
+          <button type="button" class="seg-btn" data-mode="light">Light</button>
+          <button type="button" class="seg-btn" data-mode="dark">Dark</button>
+        </div>
+      </div>
+      <div class="picker-section">
+        <h3 class="picker-label">Your palette</h3>
+        <div class="mini-palette" id="miniPalette"></div>
+        <p class="picker-note">Want to change just one color? Use the Colors tab.</p>
+      </div>
+    </div>
+
+    <!-- Colors tab -->
+    <div class="tab-panel" data-panel="colors" hidden>
+      <div class="picker-section">
+        <div class="picker-label-row">
+          <h3 class="picker-label">Colors</h3>
+          <button type="button" class="small-btn" id="resetColors" title="Undo your changes to this theme">Reset</button>
+        </div>
+        <p class="picker-note top">Click a square to open the color picker: drag the little circle to make the color lighter, darker or stronger, and slide the rainbow bar to change the color itself. You can also type a hex code.</p>
+        <div id="colorList"></div>
+      </div>
+      <div class="picker-section">
+        <h3 class="picker-label">Contrast check</h3>
+        <div id="contrastList"></div>
+        <p class="picker-note">AA needs 4.5:1 for normal text. "AA Large" (3:1) is only OK for big headings.</p>
+      </div>
+    </div>
+
+    <!-- Export tab -->
+    <div class="tab-panel" data-panel="export" hidden>
+      <div class="picker-section">
+        <h3 class="picker-label">Your palette as CSS</h3>
+        <pre class="code" id="cssOutput"></pre>
+        <button type="button" class="ui-btn ui-btn-dark wide" id="copyCss">Copy CSS</button>
+        <p class="picker-note">Paste it at the top of any stylesheet to reuse these colors.</p>
+      </div>
+    </div>
+  </aside>
+
+  <button type="button" class="open-picker" id="openPicker" aria-controls="picker">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.9 1.8-1.9 0-.5-.2-.9-.5-1.3-.3-.3-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a4 4 0 0 0 4-4c0-4.3-4-7.7-9-7.7z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/><circle cx="17" cy="11" r="1"/></svg>
+    Palette
+  </button>
+
+  <!-- ===== Header ===== -->
+  <header class="site-header">
+    <div class="container">
+      <a href="#home" class="logo">Alex<span>.</span></a>
+      <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#education">Education</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact" class="nav-button">Hire Me</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== Home ===== -->
+  <section id="home">
+    <button type="button" class="tag tag-area" data-role="tint" style="--dot: var(--tint)">Tint</button>
+    <div class="container hero">
+      <div class="hero-text">
+        <p class="hello">HELLO, I'M</p>
+        <h1>Alex Rivera <button type="button" class="tag tag-after" data-role="heading" style="--dot: var(--heading)">Heading</button></h1>
+        <p class="role">Front-End Developer &amp; <span>UI Designer</span></p>
+        <p class="intro">I design and build simple, clean and friendly websites that people actually enjoy using. <button type="button" class="tag tag-after" data-role="muted" style="--dot: var(--muted)">Muted</button></p>
+        <div class="hero-buttons">
+          <span class="tag-holder">
+            <a href="#projects" class="button">View My Work</a>
+            <button type="button" class="tag tag-above" data-role="primary" style="--dot: var(--primary)">Primary</button>
+          </span>
+          <a href="#contact" class="button button-outline">Contact Me</a>
+        </div>
+        <div class="stats">
+          <div><strong>4+</strong><span>Years learning</span></div>
+          <div><strong>15+</strong><span>Projects</span></div>
+          <div><strong>8</strong><span>Happy clients</span></div>
+        </div>
+      </div>
+      <div class="hero-image">
+        <div class="profile-pic">AR</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== About Me ===== -->
+  <section id="about" class="white-bg">
+    <button type="button" class="tag tag-area" data-role="surface" style="--dot: var(--surface)">Surface</button>
+    <div class="container">
+      <div class="section-title">
+        <p class="section-label">Get to know me</p>
+        <h2>About Me</h2>
+      </div>
+
+      <div class="about-row">
+        <div class="about-text">
+          <p class="big-text">Hi! I'm a front-end developer and designer based in Portland, Oregon. I love turning ideas into websites that look nice and are easy for everyone to use.</p>
+          <p>I recently finished my Computer Science degree and I'm now working on freelance projects for small businesses. I care a lot about clean layouts, good colors and making sites work well on phones. <button type="button" class="tag tag-after" data-role="text" style="--dot: var(--text)">Foreground</button></p>
+          <p>When I'm not coding, I like taking photos, hiking, and trying new coffee shops around the city.</p>
+        </div>
+        <div class="info-box">
+          <button type="button" class="tag tag-edge" data-role="border" style="--dot: var(--border)">Border</button>
+          <div class="info-row"><span>Name</span><strong>Alex Rivera</strong></div>
+          <div class="info-row"><span>Location</span><strong>Portland, OR</strong></div>
+          <div class="info-row"><span>Email</span><strong>hello@example.com</strong></div>
+          <div class="info-row"><span>Languages</span><strong>English, Spanish</strong></div>
+          <div class="info-row"><span>Status</span><strong>Open to work</strong></div>
+        </div>
+      </div>
+
+      <div class="skills">
+        <h3>My Skills</h3>
+        <span class="skill">HTML</span>
+        <span class="skill">CSS</span>
+        <span class="skill">JavaScript</span>
+        <span class="skill">React</span>
+        <span class="skill">Figma</span>
+        <span class="skill">Git &amp; GitHub</span>
+        <span class="skill">Responsive Design</span>
+        <span class="skill">UI Design</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Education ===== -->
+  <section id="education">
+    <button type="button" class="tag tag-area" data-role="bg" style="--dot: var(--bg)">Background</button>
+    <div class="container">
+      <div class="section-title">
+        <p class="section-label">My journey</p>
+        <h2>Education</h2>
+      </div>
+
+      <div class="timeline">
+        <div class="edu-box">
+          <span class="pill">2020 - 2024</span>
+          <h3>B.S. in Computer Science</h3>
+          <p class="school">Northfield University</p>
+          <p>Minor in Visual Design. Graduated with honors. My final project was a website that helps students find study groups.</p>
+        </div>
+
+        <div class="edu-box">
+          <span class="pill">2024</span>
+          <h3>UX Design Certificate</h3>
+          <p class="school">Online Course</p>
+          <p>Learned user research, wireframing and prototyping, and completed three design case studies.</p>
+        </div>
+
+        <div class="edu-box">
+          <span class="pill">2016 - 2020</span>
+          <h3>High School Diploma</h3>
+          <p class="school">Westbrook High School</p>
+          <p>Member of the coding club and designer for the school yearbook.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Projects ===== -->
+  <section id="projects" class="white-bg">
+    <div class="container">
+      <div class="section-title">
+        <p class="section-label">Things I've made</p>
+        <h2>My Projects</h2>
+      </div>
+
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-image color-1">
+            <div class="number">01 <button type="button" class="tag tag-after" data-role="on-primary" style="--dot: var(--on-primary)">On Primary</button></div>
+            <span class="category">Web App</span>
+          </div>
+          <div class="project-info">
+            <h3>Plant Care App</h3>
+            <p>An app that reminds you when to water your plants and keeps notes on each one.</p>
+            <span class="pill">HTML</span>
+            <span class="pill">CSS</span>
+            <span class="pill">JavaScript</span>
+            <br>
+            <a href="#" class="project-link">View Project →</a>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-image color-2">
+            <div class="number">02</div>
+            <span class="category">Dashboard</span>
+            <button type="button" class="tag tag-area tag-right" data-role="secondary" style="--dot: var(--secondary)">Secondary</button>
+          </div>
+          <div class="project-info">
+            <h3>Budget Tracker</h3>
+            <p>A simple website to keep track of money spent each month, with easy charts.</p>
+            <span class="pill">React</span>
+            <span class="pill">Chart.js</span>
+            <br>
+            <a href="#" class="project-link">View Project →</a>
+          </div>
+        </div>
+
+        <div class="project-card">
+          <div class="project-image color-3">
+            <div class="number">03</div>
+            <span class="category">Website</span>
+            <button type="button" class="tag tag-area tag-right" data-role="tertiary" style="--dot: var(--tertiary)">Tertiary</button>
+          </div>
+          <div class="project-info">
+            <h3>Travel Blog</h3>
+            <p>A blog where I share photos and stories from my trips around the world.</p>
+            <span class="pill">HTML</span>
+            <span class="pill">CSS</span>
+            <br>
+            <a href="#" class="project-link">View Project →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Contact ===== -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-card">
+        <button type="button" class="tag tag-area" data-role="contrast" style="--dot: var(--contrast)">Contrast</button>
+        <p class="section-label">Contact</p>
+        <h2>Let's work <span>together!</span> <button type="button" class="tag tag-after" data-role="on-contrast" style="--dot: var(--on-contrast)">On Contrast</button></h2>
+        <p>Have a project in mind or just want to say hi? Send me an email and I'll get back to you as soon as I can.</p>
+        <a href="mailto:hello@example.com" class="button">hello@example.com</a>
+        <div class="socials">
+          <a href="#">GitHub</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">Instagram</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2026 Alex Rivera. Made with HTML &amp; CSS.</p>
+      <a href="#home">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    // =========================================================
+    // 1. The colors you can edit. Each one is a CSS variable.
+    // =========================================================
+    const ROLES = [
+      { key: 'bg',          name: 'Background',  hint: 'Page background' },
+      { key: 'surface',     name: 'Surface',     hint: 'Cards & header' },
+      { key: 'text',        name: 'Foreground',  hint: 'Body text' },
+      { key: 'heading',     name: 'Heading',     hint: 'Titles & names' },
+      { key: 'muted',       name: 'Muted',       hint: 'Secondary text' },
+      { key: 'border',      name: 'Border',      hint: 'Lines & outlines' },
+      { key: 'primary',     name: 'Primary',     hint: 'Buttons & links' },
+      { key: 'on-primary',  name: 'On Primary',  hint: 'Text on buttons' },
+      { key: 'tint',        name: 'Tint',        hint: 'Hero & tags' },
+      { key: 'secondary',   name: 'Secondary',   hint: 'Shapes, 2nd project' },
+      { key: 'tertiary',    name: 'Tertiary',    hint: '3rd project' },
+      { key: 'contrast',    name: 'Contrast',    hint: 'Contact card' },
+      { key: 'on-contrast', name: 'On Contrast', hint: 'Text on contact card' }
+    ];
+
+    // =========================================================
+    // 2. Ready-made themes
+    // =========================================================
+    const THEMES = [
+      { name: 'Terracotta', colors: {
+          bg: '#faf7f2', surface: '#ffffff', text: '#333333', heading: '#2f2b28', muted: '#6b645d',
+          border: '#e8ddd0', primary: '#ab5a3b', 'on-primary': '#ffffff', tint: '#f3e6dc',
+          secondary: '#6f9481', tertiary: '#6a7fb0', contrast: '#2f2b28', 'on-contrast': '#ffffff' } },
+      { name: 'Matcha', colors: {
+          bg: '#f4f6ee', surface: '#fcfdf9', text: '#2e3a2f', heading: '#1f2e22', muted: '#566456',
+          border: '#dfe6d6', primary: '#52762c', 'on-primary': '#ffffff', tint: '#e3ecd3',
+          secondary: '#8c5e58', tertiary: '#a08a5c', contrast: '#2f3d2c', 'on-contrast': '#f4f6ee' } },
+      { name: 'Mocha Latte', colors: {
+          bg: '#f5efe6', surface: '#fffaf3', text: '#3b2f28', heading: '#2c211b', muted: '#66554a',
+          border: '#e7dccd', primary: '#8b5a3c', 'on-primary': '#ffffff', tint: '#ead8c4',
+          secondary: '#a87b4f', tertiary: '#5e4434', contrast: '#3b2a22', 'on-contrast': '#f5efe6' } },
+      { name: 'Strawberry Milk', colors: {
+          bg: '#fff5f6', surface: '#ffffff', text: '#3d2a2e', heading: '#2e1c20', muted: '#75585e',
+          border: '#f5dfe3', primary: '#c2405e', 'on-primary': '#ffffff', tint: '#fde2e7',
+          secondary: '#5f8f62', tertiary: '#d4708a', contrast: '#4a2530', 'on-contrast': '#fff5f6' } },
+      { name: 'Blueberry', colors: {
+          bg: '#f3f5fb', surface: '#ffffff', text: '#262b3d', heading: '#1a1f33', muted: '#5b6178',
+          border: '#dde2f0', primary: '#4a55a2', 'on-primary': '#ffffff', tint: '#e1e5f6',
+          secondary: '#5f86b8', tertiary: '#8a6bb0', contrast: '#1f2440', 'on-contrast': '#f3f5fb' } },
+      { name: 'Lavender', colors: {
+          bg: '#f7f4fb', surface: '#ffffff', text: '#352d42', heading: '#261f33', muted: '#675d78',
+          border: '#e7e0f1', primary: '#7b5ea7', 'on-primary': '#ffffff', tint: '#ebe3f7',
+          secondary: '#c27ba0', tertiary: '#6f8fb3', contrast: '#2e2540', 'on-contrast': '#f7f4fb' } },
+      { name: 'Ocean Breeze', colors: {
+          bg: '#f1f7f8', surface: '#ffffff', text: '#1f3338', heading: '#13272c', muted: '#4f666b',
+          border: '#d7e7ea', primary: '#1c7486', 'on-primary': '#ffffff', tint: '#d9edf0',
+          secondary: '#d26b50', tertiary: '#3d6e9e', contrast: '#133a44', 'on-contrast': '#f1f7f8' } },
+      { name: 'Sakura', colors: {
+          bg: '#fdf6f7', surface: '#ffffff', text: '#3a2c30', heading: '#2a1d21', muted: '#735e64',
+          border: '#f3dfe3', primary: '#ad4862', 'on-primary': '#ffffff', tint: '#f9e1e6',
+          secondary: '#7d9a6a', tertiary: '#8c6a9c', contrast: '#3d2830', 'on-contrast': '#fdf6f7' } },
+      { name: 'Honey', colors: {
+          bg: '#fdf8ec', surface: '#fffdf7', text: '#3a3020', heading: '#2b2214', muted: '#6e6249',
+          border: '#efe4c9', primary: '#96600f', 'on-primary': '#ffffff', tint: '#f8e8bf',
+          secondary: '#7c8c4a', tertiary: '#8b76ad', contrast: '#3a2c14', 'on-contrast': '#fdf8ec' } },
+      { name: 'Peach', colors: {
+          bg: '#fff6f0', surface: '#ffffff', text: '#3d2e27', heading: '#2d1f19', muted: '#74605a',
+          border: '#f6e1d5', primary: '#a9521b', 'on-primary': '#ffffff', tint: '#ffe3d3',
+          secondary: '#6e9a80', tertiary: '#c0697a', contrast: '#43282a', 'on-contrast': '#fff6f0' } },
+      { name: 'Mint Chip', colors: {
+          bg: '#f0f8f4', surface: '#ffffff', text: '#22362e', heading: '#15291f', muted: '#52695f',
+          border: '#d5eadf', primary: '#28765a', 'on-primary': '#ffffff', tint: '#d7f0e4',
+          secondary: '#6b4a3a', tertiary: '#4f8fa6', contrast: '#1d3a2f', 'on-contrast': '#f0f8f4' } },
+      { name: 'Earl Grey', colors: {
+          bg: '#f4f5f7', surface: '#ffffff', text: '#2c3038', heading: '#1d2027', muted: '#5e6470',
+          border: '#e0e3e8', primary: '#4d6385', 'on-primary': '#ffffff', tint: '#e4e8ef',
+          secondary: '#a5804a', tertiary: '#7a8296', contrast: '#262b35', 'on-contrast': '#f4f5f7' } },
+      { name: 'Ink & Paper', colors: {
+          bg: '#f7f7f5', surface: '#ffffff', text: '#222222', heading: '#111111', muted: '#5f5f5f',
+          border: '#e3e3e0', primary: '#222222', 'on-primary': '#ffffff', tint: '#ececea',
+          secondary: '#b33a3a', tertiary: '#8a8a8a', contrast: '#111111', 'on-contrast': '#f7f7f5' } },
+      { name: 'Espresso', colors: {
+          bg: '#1c1612', surface: '#26201b', text: '#e9dfd5', heading: '#f7efe6', muted: '#b3a598',
+          border: '#3a3029', primary: '#d9935f', 'on-primary': '#1c1612', tint: '#2e241d',
+          secondary: '#8aa37b', tertiary: '#c48b8b', contrast: '#e9dccd', 'on-contrast': '#241c16' } },
+      { name: 'Midnight', colors: {
+          bg: '#0f1320', surface: '#171c2c', text: '#d7dcea', heading: '#f1f3fa', muted: '#9aa3ba',
+          border: '#283049', primary: '#8ea2ff', 'on-primary': '#0f1320', tint: '#1a2140',
+          secondary: '#f2a7c3', tertiary: '#7fd1c7', contrast: '#e6e9f5', 'on-contrast': '#141a2e' } },
+      { name: 'Forest Night', colors: {
+          bg: '#121a16', surface: '#1a2520', text: '#d9e4dc', heading: '#f0f5f1', muted: '#9db0a4',
+          border: '#2b3b33', primary: '#8fc28a', 'on-primary': '#121a16', tint: '#1c2d24',
+          secondary: '#e0b36a', tertiary: '#a3c4d9', contrast: '#e3ece5', 'on-contrast': '#14201a' } },
+      { name: 'Cherry Cola', colors: {
+          bg: '#1a1214', surface: '#24191c', text: '#ecdcdf', heading: '#fbeff1', muted: '#b89da3',
+          border: '#3b2a2e', primary: '#f08a9b', 'on-primary': '#1a1214', tint: '#2d1a1f',
+          secondary: '#e8c07a', tertiary: '#9fc4b8', contrast: '#f3e3e6', 'on-contrast': '#241418' } },
+      { name: 'Charcoal', colors: {
+          bg: '#151515', surface: '#1e1e1e', text: '#dedede', heading: '#f5f5f5', muted: '#a3a3a3',
+          border: '#333333', primary: '#f2c14e', 'on-primary': '#151515', tint: '#24221c',
+          secondary: '#7fb3d5', tertiary: '#e58e73', contrast: '#f0f0f0', 'on-contrast': '#151515' } }
+    ];
+
+    // =========================================================
+    // 3. Color wheel combos.
+    //    "accents" = where the 2 extra colors sit on the wheel:
+    //    [how far to turn from the main color, how strong]
+    // =========================================================
+    const HARMONIES = {
+      complementary: {
+        label: 'Complementary',
+        accents: [[180, 0.85], [0, 0.5]],
+        tip: 'Complementary: colors from opposite sides of the wheel. Strong contrast, great for making buttons pop.'
+      },
+      analogous: {
+        label: 'Analogous',
+        accents: [[30, 0.9], [-30, 0.9]],
+        tip: 'Analogous: next-door neighbors on the wheel. Calm, natural and easy on the eyes.'
+      },
+      triadic: {
+        label: 'Triadic',
+        accents: [[120, 0.85], [240, 0.85]],
+        tip: 'Triadic: three colors spaced evenly around the wheel. Playful but still balanced.'
+      },
+      split: {
+        label: 'Split',
+        accents: [[150, 0.85], [210, 0.85]],
+        tip: 'Split complementary: your color plus the two next to its opposite. Lively, but softer than complementary.'
+      },
+      mono: {
+        label: 'Monochrome',
+        accents: [[0, 0.6], [0, 0.3]],
+        tip: 'Monochrome: one color in lighter and darker shades. Clean, simple and hard to get wrong.'
+      }
+    };
+
+    // =========================================================
+    // 4. Text/background pairs to check for readability.
+    //    Each check uses the worst background in its list.
+    // =========================================================
+    const CHECKS = [
+      { label: 'Body text',      fg: 'text',        bgs: ['bg', 'surface'] },
+      { label: 'Muted text',     fg: 'muted',       bgs: ['bg', 'surface', 'tint'] },
+      { label: 'Headings',       fg: 'heading',     bgs: ['bg', 'surface', 'tint'] },
+      { label: 'Buttons',        fg: 'on-primary',  bgs: ['primary'] },
+      { label: 'Links & labels', fg: 'primary',     bgs: ['bg', 'surface'] },
+      { label: 'Contact card',   fg: 'on-contrast', bgs: ['contrast'] }
+    ];
+
+    const ICON_COPY = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg>';
+    const ICON_CHECK = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+
+    const root = document.documentElement;
+    const STORAGE_KEY = 'portfolio-palette';
+
+    const picker = document.getElementById('picker');
+    const pickerHead = document.getElementById('pickerHead');
+    const currentTheme = document.getElementById('currentTheme');
+    const themeGrid = document.getElementById('themeGrid');
+    const colorList = document.getElementById('colorList');
+    const contrastList = document.getElementById('contrastList');
+    const cssOutput = document.getElementById('cssOutput');
+    const openButton = document.getElementById('openPicker');
+    const closeButton = document.getElementById('closePicker');
+    const labelsToggle = document.getElementById('labelsToggle');
+    const wheel = document.getElementById('wheel');
+    const wheelLines = document.getElementById('wheelLines');
+    const markerBase = document.getElementById('markerBase');
+    const markerSecondary = document.getElementById('markerSecondary');
+    const markerTertiary = document.getElementById('markerTertiary');
+    const comboList = document.getElementById('comboList');
+    const comboTip = document.getElementById('comboTip');
+    const modeSwitch = document.getElementById('modeSwitch');
+    const miniPalette = document.getElementById('miniPalette');
+    const tabButtons = document.querySelectorAll('.tab');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    const tags = document.querySelectorAll('.tag');
+
+    const inputs = {};   // the color picker + hex box for each role
+    const rows = {};     // the row element for each role
+
+    let baseTheme = THEMES[0];
+    let colors = copyColors(baseTheme.colors);
+    let edited = false;
+    let labelsOn = true;
+    const wheelState = { hue: 16, sat: 49, harmony: 'complementary', mode: 'light' };
+
+    // ----- color helpers -----
+
+    // Turns "abc", "#abc" or "#aabbcc" into "#AABBCC". Returns null if it isn't a hex color.
+    function normalizeHex(value) {
+      let hex = String(value || '').trim().replace(/^#/, '');
+      if (/^[0-9a-f]{3}$/i.test(hex)) {
+        hex = hex.split('').map(c => c + c).join('');
+      }
+      return /^[0-9a-f]{6}$/i.test(hex) ? '#' + hex.toUpperCase() : null;
+    }
+
+    function copyColors(source) {
+      const result = {};
+      ROLES.forEach(role => { result[role.key] = normalizeHex(source[role.key]); });
+      return result;
+    }
+
+    // How bright a color looks (WCAG formula)
+    function luminance(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      const channels = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map(c => {
+        c = c / 255;
+        return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    }
+
+    function contrastRatio(a, b) {
+      const la = luminance(a);
+      const lb = luminance(b);
+      return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+    }
+
+    function gradeFor(ratio) {
+      if (ratio >= 7) return ['AAA', 'pass'];
+      if (ratio >= 4.5) return ['AA', 'pass'];
+      if (ratio >= 3) return ['AA Large', 'warn'];
+      return ['Fail', 'fail'];
+    }
+
+    // hue 0-360, saturation 0-100, lightness 0-100  ->  "#RRGGBB"
+    function hslToHex(h, s, l) {
+      h = ((h % 360) + 360) % 360;
+      s = Math.max(0, Math.min(100, s)) / 100;
+      l = Math.max(0, Math.min(100, l)) / 100;
+      const a = s * Math.min(l, 1 - l);
+      const channel = n => {
+        const k = (n + h / 30) % 12;
+        const value = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+        return Math.round(value * 255).toString(16).padStart(2, '0');
+      };
+      return ('#' + channel(0) + channel(8) + channel(4)).toUpperCase();
+    }
+
+    function hexToHsl(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      const r = ((n >> 16) & 255) / 255;
+      const g = ((n >> 8) & 255) / 255;
+      const b = (n & 255) / 255;
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      const l = (max + min) / 2;
+      let h = 0;
+      let s = 0;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+        else if (max === g) h = (b - r) / d + 2;
+        else h = (r - g) / d + 4;
+        h = h * 60;
+      }
+      return { h: h, s: s * 100, l: l * 100 };
+    }
+
+    // Makes a color lighter or darker until it is readable against the other colors
+    function fitContrast(h, s, l, against, target, lighter) {
+      const worst = color => Math.min.apply(null, against.map(other => contrastRatio(color, other)));
+      let hex = hslToHex(h, s, l);
+      while (worst(hex) < target && l > 0 && l < 100) {
+        l += lighter ? 1 : -1;
+        hex = hslToHex(h, s, l);
+      }
+      return hex;
+    }
+
+    function hueName(h, s) {
+      if (s < 12) return 'Gray';
+      const names = [[12, 'Red'], [38, 'Orange'], [52, 'Amber'], [68, 'Yellow'], [95, 'Lime'],
+        [150, 'Green'], [175, 'Teal'], [200, 'Cyan'], [225, 'Sky'], [250, 'Blue'], [275, 'Indigo'],
+        [300, 'Violet'], [330, 'Magenta'], [348, 'Pink'], [361, 'Red']];
+      return names.find(item => h < item[0])[1];
+    }
+
+    // Builds a full theme (all 13 colors) from the color wheel settings
+    function generateTheme(state) {
+      const h = state.hue;
+      const s = state.sat;
+      const accents = HARMONIES[state.harmony].accents;
+      const mono = state.harmony === 'mono';
+      const c = {};
+
+      if (state.mode === 'dark') {
+        c.bg = hslToHex(h, Math.min(s * 0.3, 25), 8);
+        c.surface = hslToHex(h, Math.min(s * 0.25, 22), 12);
+        c.tint = hslToHex(h, Math.min(s * 0.4, 35), 15);
+        c.border = hslToHex(h, Math.min(s * 0.2, 18), 23);
+        c.heading = hslToHex(h, Math.min(s * 0.3, 25), 96);
+        c.text = hslToHex(h, Math.min(s * 0.15, 14), 86);
+        c.muted = fitContrast(h, Math.min(s * 0.15, 14), 66, [c.bg, c.surface, c.tint], 4.6, true);
+        c['on-primary'] = c.bg;
+        c.primary = fitContrast(h, s, 68, [c.bg, c.surface], 4.6, true);
+        c.secondary = fitContrast(h + accents[0][0], s * accents[0][1], mono ? 82 : 70, [c.bg], 3.2, true);
+        c.tertiary = fitContrast(h + accents[1][0], s * accents[1][1], mono ? 58 : 72, [c.bg], 3.2, true);
+        c.contrast = hslToHex(h, Math.min(s * 0.3, 25), 90);
+        c['on-contrast'] = hslToHex(h, Math.min(s * 0.3, 25), 10);
+      } else {
+        c.bg = hslToHex(h, Math.min(s * 0.35, 30), 97);
+        c.surface = hslToHex(h, Math.min(s * 0.5, 40), 99.5);
+        c.tint = hslToHex(h, Math.min(s * 0.6, 55), 91);
+        c.border = hslToHex(h, Math.min(s * 0.3, 25), 87);
+        c.heading = hslToHex(h, Math.min(s * 0.35, 30), 13);
+        c.text = hslToHex(h, Math.min(s * 0.2, 18), 22);
+        c.muted = fitContrast(h, Math.min(s * 0.15, 15), 42, [c.bg, c.surface, c.tint], 4.6, false);
+        c['on-primary'] = '#FFFFFF';
+        c.primary = fitContrast(h, s, 45, ['#FFFFFF', c.bg, c.surface], 4.6, false);
+        c.secondary = fitContrast(h + accents[0][0], s * accents[0][1], mono ? 58 : 48, ['#FFFFFF'], 3.2, false);
+        c.tertiary = fitContrast(h + accents[1][0], s * accents[1][1], mono ? 30 : 50, ['#FFFFFF'], 3.2, false);
+        c.contrast = hslToHex(h, Math.min(s * 0.35, 30), 15);
+        c['on-contrast'] = c.bg;
+      }
+      return c;
+    }
+
+    function buildCss() {
+      const lines = ROLES.map(role => ('  --' + role.key + ':').padEnd(17) + colors[role.key] + ';');
+      return '/* ' + baseTheme.name + (edited ? ' (edited)' : '') + ' */\n:root {\n' + lines.join('\n') + '\n}';
+    }
+
+    function copyText(text, button, doneLabel) {
+      if (button.dataset.busy) return;
+      const showDone = () => {
+        const original = button.innerHTML;
+        button.dataset.busy = 'yes';
+        button.innerHTML = doneLabel;
+        setTimeout(() => {
+          button.innerHTML = original;
+          delete button.dataset.busy;
+        }, 1200);
+      };
+      const fallback = () => {
+        const area = document.createElement('textarea');
+        area.value = text;
+        area.style.position = 'fixed';
+        area.style.opacity = '0';
+        document.body.appendChild(area);
+        area.select();
+        let copied = false;
+        try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+        area.remove();
+        button.focus();
+        if (copied) showDone();
+      };
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(showDone, fallback);
+      } else {
+        fallback();
+      }
+    }
+
+    // ----- saving in this browser -----
+
+    function loadSaved() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        if (!saved) return;
+
+        const preset = THEMES.find(t => t.name === saved.theme);
+        if (preset) {
+          baseTheme = preset;
+        } else if (saved.base && typeof saved.theme === 'string') {
+          const base = copyColors(saved.base);
+          if (ROLES.every(role => base[role.key])) {
+            baseTheme = { name: saved.theme.slice(0, 60), colors: base, generated: true };
+          }
+        }
+
+        colors = copyColors(baseTheme.colors);
+        if (saved.colors) {
+          ROLES.forEach(role => {
+            const value = normalizeHex(saved.colors[role.key]);
+            if (value) colors[role.key] = value;
+          });
+        }
+
+        const w = saved.wheel;
+        if (w) {
+          if (Number.isFinite(w.hue)) wheelState.hue = ((Math.round(w.hue) % 360) + 360) % 360;
+          if (Number.isFinite(w.sat)) wheelState.sat = Math.max(0, Math.min(100, Math.round(w.sat)));
+          if (Object.prototype.hasOwnProperty.call(HARMONIES, w.harmony)) wheelState.harmony = w.harmony;
+          if (w.mode === 'light' || w.mode === 'dark') wheelState.mode = w.mode;
+        }
+
+        if (typeof saved.labels === 'boolean') labelsOn = saved.labels;
+      } catch (e) {
+        // storage is blocked or the saved data is broken: keep the default theme
+      }
+    }
+
+    function save() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          theme: baseTheme.name,
+          base: baseTheme.colors,
+          colors: colors,
+          wheel: wheelState,
+          labels: labelsOn
+        }));
+      } catch (e) {
+        // storage is blocked: the palette just won't be remembered
+      }
+    }
+
+    // ----- updating the page and the panel -----
+
+    function applyColors() {
+      ROLES.forEach(role => root.style.setProperty('--' + role.key, colors[role.key]));
+      root.style.colorScheme = luminance(colors.bg) < 0.2 ? 'dark' : 'light';
+    }
+
+    function renderContrast() {
+      contrastList.innerHTML = '';
+      CHECKS.forEach(check => {
+        let worstRatio = Infinity;
+        let worstBg = check.bgs[0];
+        check.bgs.forEach(bgKey => {
+          const ratio = contrastRatio(colors[check.fg], colors[bgKey]);
+          if (ratio < worstRatio) {
+            worstRatio = ratio;
+            worstBg = bgKey;
+          }
+        });
+        const grade = gradeFor(worstRatio);
+
+        const row = document.createElement('div');
+        row.className = 'contrast-row';
+
+        const sample = document.createElement('span');
+        sample.className = 'contrast-sample';
+        sample.textContent = 'Aa';
+        sample.style.color = colors[check.fg];
+        sample.style.backgroundColor = colors[worstBg];
+
+        const name = document.createElement('span');
+        name.className = 'contrast-name';
+        name.textContent = check.label;
+
+        const ratio = document.createElement('span');
+        ratio.className = 'contrast-ratio';
+        ratio.textContent = worstRatio.toFixed(2) + ':1';
+
+        const badge = document.createElement('span');
+        badge.className = 'badge ' + grade[1];
+        badge.textContent = grade[0];
+
+        row.append(sample, name, ratio, badge);
+        contrastList.appendChild(row);
+      });
+    }
+
+    function renderWheel() {
+      const preview = generateTheme(wheelState);
+      const accents = HARMONIES[wheelState.harmony].accents;
+      const points = [
+        { el: markerBase, hue: wheelState.hue, sat: wheelState.sat, color: preview.primary },
+        { el: markerSecondary, hue: wheelState.hue + accents[0][0], sat: wheelState.sat * accents[0][1], color: preview.secondary },
+        { el: markerTertiary, hue: wheelState.hue + accents[1][0], sat: wheelState.sat * accents[1][1], color: preview.tertiary }
+      ];
+
+      // place the dots and draw a line from the middle to each one
+      let lines = '';
+      points.forEach(point => {
+        const angle = point.hue * Math.PI / 180;
+        const x = Math.sin(angle) * point.sat / 100;
+        const y = -Math.cos(angle) * point.sat / 100;
+        point.el.style.left = (50 + 50 * x) + '%';
+        point.el.style.top = (50 + 50 * y) + '%';
+        point.el.style.backgroundColor = point.color;
+        lines += '<line x1="110" y1="110" x2="' + (110 + 110 * x).toFixed(1) + '" y2="' + (110 + 110 * y).toFixed(1) + '"/>';
+      });
+      wheelLines.innerHTML =
+        '<g stroke="rgba(0,0,0,0.25)" stroke-width="4" stroke-linecap="round">' + lines + '</g>' +
+        '<g stroke="#ffffff" stroke-width="2" stroke-linecap="round">' + lines + '</g>' +
+        '<circle cx="110" cy="110" r="4" fill="#ffffff" stroke="rgba(0,0,0,0.3)"/>';
+
+      markerBase.setAttribute('aria-valuenow', String(wheelState.hue));
+      markerBase.setAttribute('aria-valuetext', hueName(wheelState.hue, wheelState.sat) + ', strength ' + wheelState.sat + '%');
+
+      comboList.querySelectorAll('.combo').forEach(chip => {
+        const on = chip.dataset.harmony === wheelState.harmony;
+        chip.classList.toggle('active', on);
+        chip.setAttribute('aria-pressed', String(on));
+      });
+      modeSwitch.querySelectorAll('.seg-btn').forEach(button => {
+        const on = button.dataset.mode === wheelState.mode;
+        button.classList.toggle('active', on);
+        button.setAttribute('aria-pressed', String(on));
+      });
+      comboTip.textContent = HARMONIES[wheelState.harmony].tip;
+
+      // the main colors of the page, with their hex codes
+      miniPalette.innerHTML = '';
+      [['bg', 'Background'], ['tint', 'Tint'], ['primary', 'Primary'],
+       ['secondary', 'Secondary'], ['tertiary', 'Tertiary'], ['contrast', 'Contrast']].forEach(item => {
+        const box = document.createElement('div');
+        box.className = 'mini-swatch';
+        const block = document.createElement('span');
+        block.className = 'mini-color';
+        block.style.backgroundColor = colors[item[0]];
+        const name = document.createElement('strong');
+        name.textContent = item[1];
+        const code = document.createElement('code');
+        code.textContent = colors[item[0]];
+        box.append(block, name, code);
+        miniPalette.appendChild(box);
+      });
+    }
+
+    function refresh() {
+      edited = ROLES.some(role => colors[role.key] !== normalizeHex(baseTheme.colors[role.key]));
+      applyColors();
+
+      ROLES.forEach(role => {
+        const field = inputs[role.key];
+        field.swatch.value = colors[role.key].toLowerCase();
+        if (document.activeElement !== field.hex) field.hex.value = colors[role.key];
+      });
+
+      themeGrid.querySelectorAll('.theme-card').forEach(card => {
+        const isActive = card.dataset.name === baseTheme.name;
+        card.classList.toggle('active', isActive);
+        card.setAttribute('aria-pressed', String(isActive));
+      });
+
+      tags.forEach(tag => {
+        const role = ROLES.find(item => item.key === tag.dataset.role);
+        tag.title = role.name + ' ' + colors[role.key] + ' · click to edit';
+      });
+
+      currentTheme.textContent = baseTheme.name + (edited ? ' (edited)' : '');
+      renderContrast();
+      renderWheel();
+      cssOutput.textContent = buildCss();
+      save();
+    }
+
+    function updateColor(key, value) {
+      const hex = normalizeHex(value);
+      if (!hex || hex === colors[key]) return;
+      colors[key] = hex;
+      refresh();
+    }
+
+    // Uses the wheel settings to make a new theme and puts it on the page
+    function applyWheel() {
+      const name = hueName(wheelState.hue, wheelState.sat) + ' ' + HARMONIES[wheelState.harmony].label +
+        (wheelState.mode === 'dark' ? ' · Dark' : '');
+      baseTheme = { name: name, colors: generateTheme(wheelState), generated: true };
+      colors = copyColors(baseTheme.colors);
+      refresh();
+    }
+
+    function randomTheme() {
+      const combos = Object.keys(HARMONIES);
+      wheelState.hue = Math.floor(Math.random() * 360);
+      wheelState.sat = 35 + Math.floor(Math.random() * 50);
+      wheelState.harmony = combos[Math.floor(Math.random() * combos.length)];
+      wheelState.mode = Math.random() < 0.7 ? 'light' : 'dark';
+      applyWheel();
+    }
+
+    // When you open the wheel on a ready-made theme, start from its primary color
+    function syncWheelFromColors() {
+      const hsl = hexToHsl(colors.primary);
+      wheelState.hue = Math.round(hsl.h) % 360;
+      wheelState.sat = Math.round(hsl.s);
+      wheelState.mode = luminance(colors.bg) < 0.2 ? 'dark' : 'light';
+    }
+
+    function setTab(name) {
+      tabButtons.forEach(button => {
+        const on = button.dataset.tab === name;
+        button.classList.toggle('active', on);
+        button.setAttribute('aria-selected', String(on));
+      });
+      tabPanels.forEach(panel => { panel.hidden = panel.dataset.panel !== name; });
+      if (name === 'wheel') {
+        if (!baseTheme.generated) syncWheelFromColors();
+        renderWheel();
+      }
+    }
+
+    function setPanel(open) {
+      document.body.classList.toggle('panel-open', open);
+    }
+
+    function setLabels(on) {
+      labelsOn = on;
+      labelsToggle.checked = on;
+      document.body.classList.toggle('hide-labels', !on);
+    }
+
+    // Clicking a tag on the page jumps to that color in the panel
+    function showColorRow(key) {
+      setPanel(true);
+      setTab('colors');
+      const row = rows[key];
+      picker.scrollTop = Math.max(0, row.offsetTop - pickerHead.offsetHeight - 16);
+      row.classList.add('highlight');
+      clearTimeout(row.highlightTimer);
+      row.highlightTimer = setTimeout(() => row.classList.remove('highlight'), 1600);
+      inputs[key].swatch.focus({ preventScroll: true });
+    }
+
+    // ----- build the theme cards -----
+
+    THEMES.forEach(theme => {
+      const card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'theme-card';
+      card.dataset.name = theme.name;
+
+      const swatches = document.createElement('span');
+      swatches.className = 'theme-swatches';
+      ['bg', 'tint', 'primary', 'secondary', 'contrast'].forEach(key => {
+        const stripe = document.createElement('i');
+        stripe.style.backgroundColor = theme.colors[key];
+        swatches.appendChild(stripe);
+      });
+
+      const label = document.createElement('span');
+      label.className = 'theme-name';
+      label.textContent = theme.name;
+
+      card.append(swatches, label);
+      card.addEventListener('click', () => {
+        baseTheme = theme;
+        colors = copyColors(theme.colors);
+        refresh();
+      });
+      themeGrid.appendChild(card);
+    });
+
+    // ----- build one row per color -----
+
+    ROLES.forEach(role => {
+      const row = document.createElement('div');
+      row.className = 'color-row';
+      row.innerHTML =
+        '<input type="color" class="swatch">' +
+        '<div class="color-meta"><strong></strong><span></span></div>' +
+        '<input type="text" class="hex-input" maxlength="7" spellcheck="false" autocomplete="off">' +
+        '<button type="button" class="copy-btn" title="Copy hex">' + ICON_COPY + '</button>';
+
+      row.querySelector('strong').textContent = role.name;
+      row.querySelector('.color-meta span').textContent = role.hint;
+
+      const swatch = row.querySelector('.swatch');
+      const hex = row.querySelector('.hex-input');
+      const copy = row.querySelector('.copy-btn');
+      swatch.setAttribute('aria-label', role.name + ' color');
+      hex.setAttribute('aria-label', role.name + ' hex code');
+      copy.setAttribute('aria-label', 'Copy ' + role.name + ' hex code');
+
+      // color picker
+      swatch.addEventListener('input', () => updateColor(role.key, swatch.value));
+
+      // typing a hex code: updates as soon as it has 6 digits
+      hex.addEventListener('input', () => {
+        const typed = hex.value.trim();
+        hex.classList.toggle('invalid', /[^#0-9a-f]/i.test(typed));
+        if (/^#?[0-9a-f]{6}$/i.test(typed)) updateColor(role.key, typed);
+      });
+      // when you leave the box (or press Enter), short codes like #FFF are accepted too
+      hex.addEventListener('change', () => {
+        updateColor(role.key, hex.value);
+        hex.value = colors[role.key];
+        hex.classList.remove('invalid');
+      });
+      hex.addEventListener('focus', () => setTimeout(() => hex.select(), 0));
+      hex.addEventListener('keydown', e => { if (e.key === 'Enter') hex.blur(); });
+
+      copy.addEventListener('click', () => copyText(colors[role.key], copy, ICON_CHECK));
+
+      inputs[role.key] = { swatch: swatch, hex: hex };
+      rows[role.key] = row;
+      colorList.appendChild(row);
+    });
+
+    // ----- color wheel -----
+
+    // tiny wheel icon that shows where the dots of each combo sit
+    function comboIcon(key) {
+      const dots = [[0, 1]].concat(HARMONIES[key].accents);
+      let svg = '<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">' +
+        '<circle cx="9" cy="9" r="8" fill="none" stroke="currentColor" stroke-opacity="0.35"/>';
+      dots.forEach((dot, i) => {
+        const angle = dot[0] * Math.PI / 180;
+        const x = 9 + Math.sin(angle) * 6 * dot[1];
+        const y = 9 - Math.cos(angle) * 6 * dot[1];
+        svg += '<circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="' + (i === 0 ? 2.4 : 1.8) + '" fill="currentColor"/>';
+      });
+      return svg + '</svg>';
+    }
+
+    Object.keys(HARMONIES).forEach(key => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'combo';
+      chip.dataset.harmony = key;
+      chip.innerHTML = comboIcon(key);
+      chip.append(HARMONIES[key].label);
+      chip.addEventListener('click', () => {
+        wheelState.harmony = key;
+        applyWheel();
+      });
+      comboList.appendChild(chip);
+    });
+
+    modeSwitch.querySelectorAll('.seg-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        wheelState.mode = button.dataset.mode;
+        applyWheel();
+      });
+    });
+
+    // dragging on the wheel: the angle picks the color, the distance from the middle picks how strong it is
+    let dragging = false;
+    let frame = 0;
+
+    function readWheelPoint(e) {
+      const box = wheel.getBoundingClientRect();
+      const dx = e.clientX - (box.left + box.width / 2);
+      const dy = e.clientY - (box.top + box.height / 2);
+      let hue = Math.atan2(dx, -dy) * 180 / Math.PI;
+      if (hue < 0) hue += 360;
+      wheelState.hue = Math.round(hue) % 360;
+      wheelState.sat = Math.round(Math.min(1, Math.hypot(dx, dy) / (box.width / 2)) * 100);
+    }
+
+    wheel.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      dragging = true;
+      wheel.setPointerCapture(e.pointerId);
+      markerBase.focus({ preventScroll: true });
+      readWheelPoint(e);
+      applyWheel();
+    });
+    wheel.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      readWheelPoint(e);
+      // while dragging, update the page at most once per screen frame
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          applyWheel();
+        });
+      }
+    });
+    wheel.addEventListener('pointerup', () => { dragging = false; });
+    wheel.addEventListener('pointercancel', () => { dragging = false; });
+
+    // keyboard: left/right = change color, up/down = stronger/softer
+    markerBase.addEventListener('keydown', e => {
+      const step = e.shiftKey ? 15 : 5;
+      if (e.key === 'ArrowRight') wheelState.hue = (wheelState.hue + step) % 360;
+      else if (e.key === 'ArrowLeft') wheelState.hue = (wheelState.hue - step + 360) % 360;
+      else if (e.key === 'ArrowUp') wheelState.sat = Math.min(100, wheelState.sat + step);
+      else if (e.key === 'ArrowDown') wheelState.sat = Math.max(0, wheelState.sat - step);
+      else return;
+      e.preventDefault();
+      applyWheel();
+    });
+
+    // ----- buttons, tabs, tags -----
+
+    document.getElementById('randomTheme').addEventListener('click', randomTheme);
+
+    labelsToggle.addEventListener('change', () => {
+      setLabels(labelsToggle.checked);
+      save();
+    });
+
+    tags.forEach(tag => {
+      tag.addEventListener('click', () => showColorRow(tag.dataset.role));
+    });
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        setTab(button.dataset.tab);
+        picker.scrollTop = 0;
+      });
+    });
+
+    document.getElementById('copyCss').addEventListener('click', e => {
+      copyText(buildCss(), e.currentTarget, 'Copied!');
+    });
+
+    document.getElementById('resetColors').addEventListener('click', () => {
+      colors = copyColors(baseTheme.colors);
+      refresh();
+    });
+
+    openButton.addEventListener('click', () => {
+      setPanel(true);
+      closeButton.focus();
+    });
+
+    closeButton.addEventListener('click', () => {
+      setPanel(false);
+      openButton.focus();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && document.body.classList.contains('panel-open')) {
+        setPanel(false);
+        openButton.focus();
+      }
+    });
+
+    // ----- start -----
+    loadSaved();
+    setLabels(labelsOn);
+    refresh();
+    // open beside the page on big screens, closed on phones
+    setPanel(window.matchMedia('(min-width: 900px)').matches);
+  </script>
+</body>
+</html>
